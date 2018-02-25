@@ -5,3 +5,9 @@
 Adds command line tool, simply run `iossim`
 
 ![screenshot](./images/screenshot.png)
+
+## How to contribute
+- fork repo
+- npm install
+- npm run build
+- submit pr
