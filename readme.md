@@ -16,3 +16,9 @@ Adds command line tool, simply run `iossim`
 - npm install
 - npm run build
 - submit pr
+
+## Features Wanted
+- tests
+- ability to launch apps (chrome, etc.)
+- earlier version support
+- better error handling
