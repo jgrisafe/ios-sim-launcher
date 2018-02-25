@@ -127,7 +127,7 @@
    */
   function launchDevice(id) {
     return new Promise((resolve, reject) => {
-      exec(`open -a "Simulator.app" --args -CurrentDeviceUDID ${id}`, (err) => {
+      exec(`open -a "Simulator" --args -CurrentDeviceUDID ${id}`, (err) => {
         if (err) { return reject(err) }
         resolve(id)
       })
