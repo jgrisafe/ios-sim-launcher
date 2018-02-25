@@ -1,0 +1,32 @@
+{
+  "name": "ios-sim-launcher",
+  "version": "1.0.0",
+  "description": "select and launch a device from a list of ios devies without openeing xcode",
+  "main": "index.js",
+  "scripts": {
+    "test": "echo \"Error: no test specified\" && exit 1"
+  },
+  "repository": {
+    "type": "git",
+    "url": "git+https://github.com/jgrisafe/ios-sim-launcher.git"
+  },
+  "keywords": [
+    "ios",
+    "simulator"
+  ],
+  "author": "joey grisafe <grisafe.development@gmail.com>",
+  "license": "MIT",
+  "bugs": {
+    "url": "https://github.com/jgrisafe/ios-sim-launcher/issues"
+  },
+  "homepage": "https://github.com/jgrisafe/ios-sim-launcher#readme",
+  "bin": {
+    "iossim": "./index.js"
+  },
+  "engines": {
+    "node": ">=8.0"
+  },
+  "dependencies": {
+    "inquirer": "^5.1.0"
+  }
+}
