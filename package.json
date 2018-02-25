@@ -1,6 +1,6 @@
 {
   "name": "ios-sim-launcher",
-  "version": "1.0.0",
+  "version": "1.0.1",
   "description": "select and launch a device from a list of ios devies without openeing xcode",
   "main": "index.js",
   "scripts": {
