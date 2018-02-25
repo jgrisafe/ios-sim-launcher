@@ -1,6 +1,6 @@
-#!/usr/bin/env node
 ;(function() {
   const exec = require('child_process').exec;
+  const inquirer = require('inquirer');
 
   /**
    * Gets list of available devices to simulate
@@ -48,56 +48,6 @@
     } catch (err) {
       console.log('Error: unable to get device list...\nplease make sure you have installed additional components in Xcode\n');
       console.log(err.message);
-      process.exit();
-    }
-  }
-
-  /**
-   * Gets the path to the user's node modules
-   *
-   * @function getNodeModulePrefix
-   * @return {promise} resolves as node module prefix
-   */
-  function getNodeModulePrefix() {
-    return new Promise((resolve, reject) => {
-      exec('npm config -g get prefix', (err, prefix) => {
-        if (err) { return reject(err); }
-        resolve(`${prefix.trim()}/lib/node_modules/`);
-      })
-    })
-  }
-
-  /*
-   * Get's the path to the user's node modules
-   *
-   * @async
-   * @function tryGetNodeModulePrefix
-   * @return {string} node module prefix
-   */
-  async function tryGetNodeModulePrefix() {
-    try {
-      return await getNodeModulePrefix();
-    } catch (err) {
-      console.log('Error: unable to get node_module prefix. Do you have npm installed?')
-      console.log(err) // eslint-disable-line no-console
-      process.exit();
-    }
-  }
-
-  /*
-   * Attempt a node module require
-   *
-   * @async
-   * @function tryRequire
-   * @param {string} package - package name
-   * @return {string} node module prefix
-   */
-  async function tryRequire(package) {
-    const prefix = await tryGetNodeModulePrefix();
-    try {
-      return require(`${prefix}/${package}`);
-    } catch (err) {
-      console.log(`Error: Please run 'npm install -g ${package}' to continue`);
       process.exit();
     }
   }
@@ -171,7 +121,6 @@
    * @return {promise} - resolves to the selected device
    */
   async function inquireDevice(devices) {
-    const inquirer = await tryRequire('inquirer');
     return new Promise((resolve, reject) => {
       inquirer.prompt([
         {
