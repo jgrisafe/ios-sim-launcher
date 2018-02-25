@@ -6,6 +6,11 @@ Adds command line tool, simply run `iossim`
 
 ![screenshot](./images/screenshot.png)
 
+## System Requirements
+- XCode 7.0 or later
+- XCode additional components
+- Node
+
 ## How to contribute
 - fork repo
 - npm install
