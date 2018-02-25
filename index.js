@@ -46,7 +46,7 @@
     try {
       return await getDeviceList();
     } catch (err) {
-      console.log('error getting devices');
+      console.log('Error: unable to get device list...\nplease make sure you have installed additional components in Xcode\n');
       console.log(err.message);
       process.exit();
     }
@@ -78,7 +78,7 @@
     try {
       return await getNodeModulePrefix();
     } catch (err) {
-      console.log('error getting node_module prefix. Do you have npm installed?')
+      console.log('Error: unable to get node_module prefix. Do you have npm installed?')
       console.log(err) // eslint-disable-line no-console
       process.exit();
     }
@@ -97,7 +97,7 @@
     try {
       return require(`${prefix}/${package}`);
     } catch (err) {
-      console.log(`Please run 'npm install -g ${package}' to continue`);
+      console.log(`Error: Please run 'npm install -g ${package}' to continue`);
       process.exit();
     }
   }
@@ -127,7 +127,7 @@
    */
   function launchDevice(id) {
     return new Promise((resolve, reject) => {
-      exec(`open -a "Simulator" --args -CurrentDeviceUDID ${id}`, (err) => {
+      exec(`open -a "Simulator.app" --args -CurrentDeviceUDID ${id}`, (err) => {
         if (err) { return reject(err) }
         resolve(id)
       })
@@ -148,7 +148,7 @@
       if (err.message.indexOf('state: Booted')) {
         // do nothing
       } else {
-        console.log('unable to boot device');
+        console.log('Error: unable to boot device...\nplease make sure you have installed additional components in Xcode\n\n');
         console.log(err);
         process.exit()
       }
@@ -156,7 +156,7 @@
     try {
       await launchDevice(id);
     } catch (err) {
-      console.log('unable to launch device, xcode 7 or more required');
+      console.log('Error: unable to launch device, xcode 7 or more required');
       console.log(err);
       process.exit();
     }
@@ -202,7 +202,7 @@
     try {
       return await inquireDevice(devices);
     } catch (err) {
-      console.log('there was an error recieving your choice\n', err.message)
+      console.log('Error: there was an error recieving your choice\n', err.message)
     }
   }
 
