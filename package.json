@@ -4,7 +4,7 @@
   "description": "select and launch a device from a list of ios devies without openeing xcode",
   "main": "index.js",
   "scripts": {
-    "build": "npx babel src/index.js -o dist/index.js"
+    "build": "webpack"
   },
   "repository": {
     "type": "git",
