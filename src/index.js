@@ -1,58 +1,57 @@
 ;(function() {
-  const exec = require('child_process').exec;
+  const promisify = require('util').promisify;
+  const exec = promisify(require('child_process').exec);
   const inquirer = require('inquirer');
 
+
   /**
-   * Gets list of available devices to simulate
-   *
-   * @function getDeviceList
-   * @return {promise} resolves as list of devices
+   * parses the stdout of the xcru simctl list into an array of device objects
+   * { value, name } where value is the device id
+   * 
+   * @function parseDevices
+   * @param {string} stdout - the output of the sim command
+   * @returns {array} device objects
    */
-  function getDeviceList() {
-    return new Promise((resolve, reject) => {
-      exec("xcrun simctl list", function(err, stdout) {
-        if (err) { return reject(err); }
-        const devicesStart = stdout.indexOf('== Devices ==');
-        const devicesEnd = stdout.indexOf('== Device Pairs ==');
-        const devices = stdout
-          .slice(devicesStart, devicesEnd)
-          .split('\n')
-          .filter(line => line.indexOf('--') === -1)
-          .slice(1)
-          .map((line) => {
-            const idMatch = line.match(/(([\d\w]{0,20}-[\d\w]{0,20}){3,})/)
-            if (idMatch) {
-              return {
-                value: idMatch[0],
-                name: line.slice(0, idMatch.index - 1).trim()
-              }
-            }
-            return null
-          })
-          .filter(item => !!item)
-          resolve(devices)
-      });
-    })
+  function parseDevices(stdout) {
+    const devicesStart = stdout.indexOf('== Devices ==');
+    const devicesEnd = stdout.indexOf('== Device Pairs ==');
+    return stdout
+      .slice(devicesStart, devicesEnd)
+      .split('\n')
+      .filter(line => line.indexOf('--') === -1)
+      .slice(1)
+      .map((line) => {
+        const idMatch = line.match(/(([\d\w]{0,20}-[\d\w]{0,20}){3,})/)
+        if (idMatch) {
+          return {
+            value: idMatch[0],
+            name: line.slice(0, idMatch.index - 1).trim()
+          }
+        }
+        return null
+      })
+      .filter(item => !!item)
   }
 
   /**
    * Gets list of available devices to simulate
    *
    * @async
-   * @function tryGetDeviceList
-   * @return {array} list of device objects { value(id), name }
+   * @function getDeviceList
+   * @return {promise} resolves as list of devices
    */
-  async function tryGetDeviceList() {
+  async function getDeviceList() {
     try {
-      return await getDeviceList();
+      const { stdout } = await exec("xcrun simctl list");
+      return parseDevices(stdout);
     } catch (err) {
-      console.log('Error: unable to get device list...\nplease make sure you have installed additional components in Xcode\n');
-      console.log(err.message);
-      process.exit();
+      console.log('Error: unable to get device list...\nplease make sure you' + 
+        'have installed additional components in Xcode\n');
+      throw err;
     }
   }
 
-  /*
+  /**
    * Boot a simulated device
    *
    * @function bootDevice
@@ -60,15 +59,10 @@
    * @return {promise}
    */
   function bootDevice(id) {
-    return new Promise((resolve, reject) => {
-      exec(`xcrun simctl boot ${id}` , (err) => {
-        if (err) { return reject(err); }
-        resolve(true)
-      })
-    })
+    return exec(`xcrun simctl boot ${id}`);
   }
 
-  /*
+  /**
    * Launch a booted simulated device
    *
    * @function launchDevice
@@ -76,15 +70,10 @@
    * @return {promise}
    */
   function launchDevice(id) {
-    return new Promise((resolve, reject) => {
-      exec(`open -a "Simulator" --args -CurrentDeviceUDID ${id}`, (err) => {
-        if (err) { return reject(err) }
-        resolve(id)
-      })
-    })
+    return exec(`open -a "Simulator" --args -CurrentDeviceUDID ${id}`)
   }
 
-  /*
+  /**
    * Calls functions to boot and launch a device
    *
    * @async
@@ -98,21 +87,20 @@
       if (err.message.indexOf('state: Booted')) {
         // do nothing
       } else {
-        console.log('Error: unable to boot device...\nplease make sure you have installed additional components in Xcode\n\n');
-        console.log(err);
-        process.exit()
+        console.log('Error: unable to boot device...\nplease make sure you have' +
+          'installed additional components in Xcode\n\n');
+        throw err;
       }
     }
     try {
       await launchDevice(id);
     } catch (err) {
       console.log('Error: unable to launch device, xcode 7 or more required');
-      console.log(err);
-      process.exit();
+      throw(err);
     }
   }
 
-  /*
+  /**
    * prompts user to select a device to simulate
    *
    * @async
@@ -122,24 +110,18 @@
    */
   async function inquireDevice(devices) {
     return new Promise((resolve, reject) => {
-      inquirer.prompt([
-        {
+
+      // not a real promise, so can't be returned directly
+      inquirer.prompt([{
           type: 'list',
           name: 'device',
           message: 'Please choose a device',
           choices: devices
-        }
-      ])
-        .then(res => {
-          resolve(res.device)
-        })
-        .catch(err => {
-          reject(err)
-        })
+        }]).then(res => resolve(res.device)).catch(err => reject(err))
     })
   }
 
-  /*
+  /**
    * handles promise from inquireDevice
    *
    * @async
@@ -155,17 +137,21 @@
     }
   }
 
-  /*
+  /**
    * main script to start simulator
    *
    * @async
    * @function init
    */
   async function init() {
-    const devices = await tryGetDeviceList();
-    const id = await tryInquireDevices(devices);
-    startDevice(id)
+    try {
+      const devices = await getDeviceList();
+      const id = await tryInquireDevices(devices);
+      startDevice(id)
+    } catch (err) {
+      console.log(err.message);
+    }
   }
 
-  init();
+  init().catch(console.error.bind(console));
 }())

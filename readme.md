@@ -2,7 +2,7 @@
 
 ### Easiest way to boot up an iOS Simulator without any copy/paste. Simply select from a list.
 
-Adds command line tool, simply run `iossim`
+### Adds command line tool, simply run `iossim`
 
 ![screenshot](./images/screenshot.png)
 
@@ -14,6 +14,7 @@ Adds command line tool, simply run `iossim`
 ## How to contribute
 - fork repo
 - npm install
+- make changes
 - npm run build
 - submit pr
 

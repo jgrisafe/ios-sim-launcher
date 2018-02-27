@@ -3,7 +3,7 @@
   "version": "1.0.3",
   "description": "select and launch a device from a list of ios devies without opening xcode",
   "main": "index.js",
-  "preferGlobal": "true",
+  "preferGlobal": true,
   "scripts": {
     "build": "webpack"
   },
